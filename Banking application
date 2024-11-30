@@ -1,0 +1,148 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+class BankAccount {
+    private String accountHolder;
+    private double balance;
+
+    public BankAccount(String accountHolder) {
+        this.accountHolder = accountHolder;
+        this.balance = 0.0;
+    }
+
+    public void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+        }
+    }
+
+    public void withdraw(double amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+        }
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public String getAccountHolder() {
+        return accountHolder;
+    }
+}
+
+public class BankingSystem extends JFrame {
+    private JTextField accountHolderField;
+    private JTextField depositField;
+    private JTextField withdrawField;
+    private JTextArea resultArea;
+    private BankAccount account;
+
+    public BankingSystem() {
+        setTitle("Simple Banking System");
+        setSize(400, 300);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new FlowLayout());
+
+        // Create components
+        JLabel accountHolderLabel = new JLabel("Account Holder:");
+        accountHolderField = new JTextField(15);
+
+        JButton createAccountButton = new JButton("Create Account");
+        JLabel depositLabel = new JLabel("Deposit Amount:");
+        depositField = new JTextField(10);
+        JButton depositButton = new JButton("Deposit");
+
+        JLabel withdrawLabel = new JLabel("Withdraw Amount:");
+        withdrawField = new JTextField(10);
+        JButton withdrawButton = new JButton("Withdraw");
+
+        resultArea = new JTextArea(5, 30);
+        resultArea.setEditable(false);
+
+        // Add action listeners
+        createAccountButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createAccount();
+            }
+        });
+
+        depositButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deposit();
+            }
+        });
+
+        withdrawButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                withdraw();
+            }
+        });
+
+        // Add components to the frame
+        add(accountHolderLabel);
+        add(accountHolderField);
+        add(createAccountButton);
+        add(depositLabel);
+        add(depositField);
+        add(depositButton);
+        add(withdrawLabel);
+        add(withdrawField);
+        add(withdrawButton);
+        add(new JScrollPane(resultArea));
+
+        setVisible(true);
+    }
+
+    private void createAccount() {
+        String accountHolder = accountHolderField.getText();
+        if (!accountHolder.isEmpty()) {
+            account = new BankAccount(accountHolder);
+            resultArea.setText("Account created for: " + accountHolder);
+        } else {
+            resultArea.setText("Please enter a valid account holder name.");
+        }
+    }
+
+    private void deposit() {
+        try {
+            double amount = Double.parseDouble(depositField.getText());
+            if (account != null) {
+                account.deposit(amount);
+                resultArea.setText("Deposited: " + amount + "\nNew Balance: " + account.getBalance());
+            } else {
+                resultArea.setText("Please create an account first.");
+            }
+        } catch (NumberFormatException e) {
+            resultArea.setText("Please enter a valid amount.");
+        }
+    }
+
+    private void withdraw() {
+        try {
+            double amount = Double.parseDouble(withdrawField.getText());
+            if (account != null) {
+                account.withdraw(amount);
+                resultArea.setText("Withdrew: " + amount + "\nNew Balance: " + account.getBalance());
+            } else {
+                resultArea.setText("Please create an account first.");
+            }
+        } catch (NumberFormatException e) {
+            resultArea.setText("Please enter a valid amount.");
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new BankingSystem();
+            }
+        });
+    }
+}
